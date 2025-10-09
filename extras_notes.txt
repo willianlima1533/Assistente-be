@@ -1,0 +1,5 @@
+NOTAS EXTRAS:
+- OpenCV e Selenium são possíveis, porém pesados e podem exigir passos adicionais no Termux.
+- Selenium webdriver no Android geralmente exige um chromedriver compatível e o Chrome/Edge instalado,
+  configuração avançada não incluída neste template.
+- Se quiser, posso adicionar módulos opcionais (opencv.py, selenium_integration.py) com instruções.
