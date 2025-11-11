@@ -5,8 +5,9 @@ import sys
 import os
 from pathlib import Path
 
-# Adicionar o diretório pai ao path para importar módulos
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Adicionar o diretório raiz do projeto ao path para importar módulos
+ROOT_DIR = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT_DIR))
 
 # Importar o logger para garantir que a UI use o sistema de logging
 try:
