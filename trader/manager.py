@@ -1,7 +1,7 @@
 # manager.py - gestão de bankroll, stakes e histórico
 import csv, os, json
 from datetime import datetime
-from config import BANKROLL_INITIAL, MIN_STAKE_PERCENT, MAX_STAKE_PERCENT, RESULTS_DIR, DRY_RUN
+import sys; sys.path.insert(0, ".."); from config import BANKROLL_INITIAL, MIN_STAKE_PERCENT, MAX_STAKE_PERCENT, RESULTS_DIR, DRY_RUN
 
 class BankrollManager:
     def __init__(self, initial=None):

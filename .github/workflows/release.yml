@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Extract version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s (%h)" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create Release Archive
+      run: |
+        zip -r assistente-be-${{ steps.get_version.outputs.VERSION }}.zip . \
+          -x "*.git*" -x "*__pycache__*" -x "*.pyc" -x "venv/*" -x "logs/*" -x "results/*"
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## 🚀 Assistente-be ${{ steps.get_version.outputs.VERSION }}
+          
+          ### 📝 Changelog
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ### 📦 Instalação
+          ```bash
+          # Clone o repositório
+          git clone https://github.com/${{ github.repository }}.git
+          cd Assistente-be
+          
+          # Instale as dependências
+          pip install -r requirements.txt
+          
+          # Execute o assistente
+          python main.py --dry-run
+          ```
+          
+          ### 🔧 Requisitos
+          - Python 3.11 ou 3.12
+          - Sistema operacional: Windows, Linux, macOS, Termux (Android)
+        files: |
+          assistente-be-${{ steps.get_version.outputs.VERSION }}.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "✅ Release ${{ steps.get_version.outputs.VERSION }} criada com sucesso!"

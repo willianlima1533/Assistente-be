@@ -1,10 +1,10 @@
 # analyzer.py - busca dados de partidas e calcula probabilidades simples
 # Usa API-Football quando disponível; caso contrário, usa CSV local de fixtures.
 import requests, pandas as pd, numpy as np
-from config import API_FOOTBALL_KEY
+import sys; sys.path.insert(0, ".."); from config import API_FOOTBALL_KEY
 import os
 
-DATA_CSV = os.path.join('data','fixtures_sample.csv')
+DATA_CSV = os.path.join('..', 'assets', 'data', 'fixtures_sample.csv')
 
 def fetch_fixtures_from_api(league_id=None):
     """Exemplo de fetch usando API-Football (precisa de chave)."""

@@ -2,7 +2,7 @@
 import random, itertools
 import numpy as np
 from analyzer import enrich_with_probs
-from config import MIN_STAKE_PERCENT, MAX_STAKE_PERCENT, BANKROLL_INITIAL
+import sys; sys.path.insert(0, ".."); from config import MIN_STAKE_PERCENT, MAX_STAKE_PERCENT, BANKROLL_INITIAL
 
 random.seed()
 

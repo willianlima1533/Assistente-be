@@ -1,0 +1,88 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - '**.md'
+      - '.github/workflows/docs.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install documentation dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mkdocs mkdocs-material pymdown-extensions
+    
+    - name: Create mkdocs.yml if not exists
+      run: |
+        if [ ! -f mkdocs.yml ]; then
+          cat > mkdocs.yml << 'EOF'
+        site_name: Assistente-be Documentation
+        site_description: Sistema de Trading e Apostas Inteligente
+        site_author: Willian Lima
+        repo_url: https://github.com/${{ github.repository }}
+        repo_name: GitHub
+        
+        theme:
+          name: material
+          palette:
+            primary: indigo
+            accent: indigo
+          features:
+            - navigation.tabs
+            - navigation.sections
+            - toc.integrate
+            - search.suggest
+            - search.highlight
+        
+        nav:
+          - Home: index.md
+          - Instalação: installation.md
+          - Configuração: configuration.md
+          - Uso: usage.md
+          - API: api.md
+        
+        markdown_extensions:
+          - pymdownx.highlight
+          - pymdownx.superfences
+          - pymdownx.tabbed
+          - admonition
+          - codehilite
+        EOF
+        fi
+    
+    - name: Create docs structure
+      run: |
+        mkdir -p docs
+        if [ ! -f docs/index.md ]; then
+          cp README.md docs/index.md
+        fi
+    
+    - name: Build documentation
+      run: mkdocs build
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./site
+        cname: false
